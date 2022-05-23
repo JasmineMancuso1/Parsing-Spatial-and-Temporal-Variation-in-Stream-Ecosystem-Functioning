@@ -1,0 +1,66 @@
+#code for bargraph figure (HMC and Tiegs et al. 2019 data)
+
+library(readr)
+library(ggplot2)
+
+ggplot(data=CELLHMCKD, aes(x=reorder(CELLHMCKD$part.stream,kd), y=CELLHMCKD$`kd`,fill=CELLHMCKD$Biome))+
+  geom_bar(stat="identity",position=position_dodge(0.0)) + scale_fill_manual(values = c("Boreal Forests/Tiaga" = "#88CCEE", "Deserts & Xeric Shrublands" = "#88CCEE",
+                                                           "HMC"="#882255", "Mediterranean Forests, Woodlands & Scrub" = "#88CCEE", "Montane Grasslands & Shrublands"="#88CCEE",
+                                                           "Temperate Broadleaf & Mixed Forests"="#117733", "Temperate Conifer Forests"="#88CCEE", "Temperate Grasslands, Savannas & Shrublands" = "#88CCEE",
+                                                           "Tropical & Subtropical Dry Broadleaf Forests"="#88CCEE", "Tropical & Subtropical Grasslands, Savannas & Shrublands" = "#88CCEE","Tropical & Subtropical Moist Broadleaf Forests" = "#88CCEE", "Tundra"="#88CCEE")) + theme(panel.background=element_blank())+ theme(legend.position = "none")
+ggplot(data=CELLHMCKDD, aes(x=reorder(CELLHMCKDD$part.stream,kdd), y=CELLHMCKDD$`kdd`,fill=CELLHMCKDD$Biome))+
+  geom_bar(stat="identity",position=position_dodge(0.0)) + scale_fill_manual(values = c("Boreal Forests/Tiaga" = "#88CCEE", "Deserts & Xeric Shrublands" = "#88CCEE",
+                                                                                        "HMC"="#882255", "Mediterranean Forests, Woodlands & Scrub" = "#88CCEE", "Montane Grasslands & Shrublands"="#88CCEE",
+                                                                                        "Temperate Broadleaf & Mixed Forests"="#117733", "Temperate Conifer Forests"="#88CCEE", "Temperate Grasslands, Savannas & Shrublands" = "#88CCEE",
+                                                                                        "Tropical & Subtropical Dry Broadleaf Forests"="#88CCEE", "Tropical & Subtropical Grasslands, Savannas & Shrublands" = "#88CCEE",
+                                                                                        
+                                                                                        "Tropical & Subtropical Moist Broadleaf Forests" = "#88CCEE", "Tundra"="#88CCEE")) + theme(panel.background=element_blank())+ theme(legend.position = "none")
+
+
+
+
+
+
+#code for ANOVA (using kd below as example; same was performed for kdd)
+
+library(readr)
+library(car)
+library(ggplot2)
+
+x <- read_csv("C:/Users/jlman/OneDrive/Documents/Tiegs' Lab - NZMS/Messick HMC Data/Within-Stream/JM_2wayanova_yr_stream.csv")
+
+#square root transformation
+skd <- sqrt(x$kd)
+fYear <-as.factor(x$Year)
+sa <- aov(skd ~fYear + Stream, x)
+summary(sa)
+plot(sa, which=1)
+asres <- residuals (sa)
+hist(asres)
+shapiro.test(asres)
+summary(sa)
+
+
+
+#code for PCA
+library(readr)
+library(vegan)
+library(UsingR)
+library(dplyr)
+library(ggplot2)
+
+streamxtic <-read_csv("~/Tiegs' Lab - NZMS/Messick HMC Data/JM_stream_xtic_PCAA-Z2.csv")
+View(streamxtic)
+
+sxsub <-subset(streamxtic,select=Phos:Cond, drop=FALSE)
+x <-rda(sxsub, scale=TRUE)
+x
+summary(x, scaling=2) 
+ordiplot(x)
+xord<-ordiplot(x,type="n",scaling=2)
+text(xord, "species", col="black", cex=0.8)
+points(xord, "sites", pch=c(rep(16, 23)), col=c(rep("black",23)),
+       cex=c(rep(1.88, 1), rep(6.82, 1), rep(3.35, 1), rep(2.32, 1), rep(7.31, 1), rep(1.60, 1), rep(7.04, 1),
+             rep(4.42, 1), rep(2.17, 1), rep(1.24, 1), rep(1.8, 1), rep(0.62, 1), rep(1.57, 1), rep(4.72, 1), 
+             rep(1.69, 1), rep(1.22, 1), rep(5.48, 1), rep(0.653, 1), rep(0.89, 1), rep(0.89, 1), rep(0.345, 1), 
+             rep(1.38, 1), rep(0.85, 1)))
